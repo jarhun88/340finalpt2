@@ -1,0 +1,1 @@
+#the zip file has all the kaggle data that we need, unzip and put in data folder (DONT PUSH THE RAW DATA FILES CUZ IT TAKES FOREVER)

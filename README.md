@@ -1,1 +1,1 @@
-#the zip file has all the kaggle data that we need, unzip and put in data folder (DONT PUSH THE RAW DATA FILES CUZ IT TAKES FOREVER)
+download zipfile from kaggle and put into data folder. DONT PUSH THE zipfile cuz it takes forever to push/pull.

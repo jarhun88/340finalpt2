@@ -1,58 +1,45 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
-# from statsmodels.graphics.tsaplots import plot_pacf
-# import classifier
-# import utils
+import time
 import os
 import glob
+from neural_net import NeuralNet
+from csv_processor import CSV_Processor
 
 # pre-processing X train data
 ROOT_DIR = os.path.abspath(os.curdir)
-csvtrainingDir = ROOT_DIR
-all_X_files = glob.glob(csvtrainingDir + "/data/train/X/*.csv")
-print(all_X_files)
+all_X_train_files = ROOT_DIR + "/data/train/X/*.csv"
+all_Y_train_files = ROOT_DIR + "/data/train/y/*.csv"
 
-main_X_file = []
-for file in all_X_files:
-    df = pd.read_csv(file, index_col=None, header=0)
-    # print(file)
-    for col in df.columns:
-        if 'time' in col or 'id' in col or 'type' in col:
-            df.drop(col, axis=1, inplace=True)
+all_X_val_files = ROOT_DIR + "/data/val/X/*.csv"
+all_Y_val_files = ROOT_DIR + "/data/val/y/*.csv"
 
-        if 'role' in col:
-            # convert 'role' values to integers
-            for idx in range(11):
-                if df.loc[idx, col] == 'agent':
-                    df.loc[idx, col] = 1
-                else:
-                    df.loc[idx, col] = 0
-    array = df.to_numpy()
-    flattened_array = array.flatten()
-    main_X_file.append(flattened_array)
+csv_processor = CSV_Processor()
 
-# convert main_X_file to np.array
-main_X_array = np.array(main_X_file)
-print(main_X_array)
+Xtrain, ytrain = csv_processor.process_csv(all_X_train_files, all_Y_train_files)
+Xval, yval = csv_processor.process_csv(all_X_val_files, all_Y_val_files)
 
+print(Xtrain)
+print(ytrain)
+print(Xval)
+print(yval)
 
-# pre-processing Y train data
-all_y_files = glob.glob(csvtrainingDir + "/data/train/y/*.csv")
-print(all_y_files)
+# hidden_layer_sizes = [50]
+# model = NeuralNet(hidden_layer_sizes)
 
-main_y_file = []
-for file in all_y_files:
-    df = pd.read_csv(file, index_col=None, header=0)
-    print(file)
-    for col in df.columns:
-        if 'time' in col:
-            df.drop(col, axis=1, inplace=True)
+print("made it")
 
-    array = df.to_numpy()
-    flattened_array = array.flatten()
-    main_y_file.append(flattened_array)
+# t = time.time()
+# model.fit(Xtrain,ytrain)
+# print("Fitting took %d seconds" % (time.time()-t))
 
-# convert main_y_file to np.array
-main_y_array = np.array(main_y_file)
-print(main_y_array)
+# # Comput training error
+# yhat = model.predict(X)
+# trainError = np.mean(yhat != y)
+# print("Training error = ", trainError)
+
+# # Compute test error
+# yhat = model.predict(Xtest)
+# testError = np.mean(yhat != ytest)
+# print("Test error     = ", testError)

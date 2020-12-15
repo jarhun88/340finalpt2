@@ -7,7 +7,6 @@ import glob
 import re
 from neural_net import NeuralNet
 
-
 class CSV_Processor():
 
     def process_csv(self, Xpath, yPath):
@@ -37,10 +36,6 @@ class CSV_Processor():
             flattened_array = array.flatten()
             main_X_file.append(flattened_array)
 
-        # convert main_X_file to np.array
-
-        # print(main_X_array)
-
         # pre-processing Y train data
         all_y_files = os.listdir(yPath)
         all_y_files.sort(key=lambda f: int(re.sub('\D', '', f)))
@@ -58,16 +53,12 @@ class CSV_Processor():
             flattened_array = array.flatten()
             if flattened_array.shape[0] != 60:
                 # dont add and also delete the associating x val
-                print("happened")
                 del main_X_file[i]
                 continue
             main_y_file.append(flattened_array)
 
-
         # convert main_files to np.array
         main_X_array = np.array(main_X_file, dtype='float64')
         main_y_array = np.array(main_y_file, dtype='float64')
-        # print(main_y_array)
-
 
         return main_X_array, main_y_array

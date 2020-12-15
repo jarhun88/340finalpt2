@@ -40,17 +40,12 @@ class NeuralNet():
         activations = [X]
         for W, b in weights:
             Z = X @ W.T + b
+            # Z_max = np.max(Z, axis=1)
             X = 1/(1+np.exp(-Z))
             activations.append(X)
 
         yhat = Z
-        
-        # if self.classification: # softmax- TODO: use logsumexp trick to avoid overflow
-        tmp = np.sum(np.exp(yhat), axis=1)
-        # f = -np.sum(yhat[y.astype(bool)] - np.log(tmp))
-        # f = -np.sum(yhat[y.astype(bool)] - log_sum_exp(yhat))
-        # grad = np.exp(yhat) / tmp[:,None] - y
-        # else:  # L2 loss
+
         f = 0.5*np.sum((yhat-y)**2)
         grad = yhat-y # gradient for L2 loss
 
@@ -78,11 +73,7 @@ class NeuralNet():
 
     
     def fit(self, X, y):
-        if y.ndim == 1:
-            y = y[:,None]
-            
         self.layer_sizes = [X.shape[1]] + self.hidden_layer_sizes + [y.shape[1]]
-        # self.classification = y.shape[1]>1 # assume it's classification iff y has more than 1 column
 
         # random init
         scale = 0.01
@@ -93,23 +84,17 @@ class NeuralNet():
             weights.append((W,b))
         weights_flat = flatten_weights(weights)
 
-        # utils.check_gradient(self, X, y, len(weights_flat), epsilon=1e-6)
         weights_flat_new, f = findMin.findMin(self.funObj, weights_flat, self.max_iter, X, y, verbose=True)
 
         self.weights = unflatten_weights(weights_flat_new, self.layer_sizes)
 
     def fit_SGD(self, X, y):
-        if y.ndim == 1:
-            y = y[:,None]
-            
         self.layer_sizes = [X.shape[1]] + self.hidden_layer_sizes + [y.shape[1]]
-        # self.classification = y.shape[1]>1 # assume it's classification iff y has more than 1 column
-
         # random init
         scale = 0.01
         weights = list()
         for i in range(len(self.layer_sizes)-1):
-            W = scale * np.random.randn(self.layer_sizes[i+1],self.layer_sizes[i])
+            W = scale * np.random.randn(self.layer_sizes[i+1], self.layer_sizes[i])
             b = scale * np.random.randn(1,self.layer_sizes[i+1])
             weights.append((W,b))
         weights_flat = flatten_weights(weights)
@@ -121,7 +106,7 @@ class NeuralNet():
         for t in range(self.max_iter*n//batch_size): # max_iter is epochs here
             if t*batch_size % n == 0:
                 f, g = self.funObj(weights_flat, X, y)
-                print("Epoch %d, Loss = %f" % ((t*batch_size)//n+1, f))
+                # print("Epoch %d, Loss = %f" % ((t*batch_size)//n+1, f))
             
             batch = np.random.choice(n,size=batch_size,replace=False)
 
@@ -130,16 +115,8 @@ class NeuralNet():
         
         self.weights = unflatten_weights(weights_flat, self.layer_sizes)
 
-
     def predict(self, X):
         for W, b in self.weights:
             Z = X @ W.T + b
             X = 1/(1+np.exp(-Z))
-        # if self.classification:
-        # return np.argmax(Z,axis=1)
-        # else:
         return Z
-
-
-
-

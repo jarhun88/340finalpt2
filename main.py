@@ -21,35 +21,34 @@ all_Y_train_files = ROOT_DIR + "\\data\\train\\y\\"
 all_X_val_files = ROOT_DIR + "\\data\\val\\X\\"
 all_Y_val_files = ROOT_DIR + "\\data\\val\\y\\"
 
+all_X_test_files = ROOT_DIR + "\\data\\test\\X\\"
+
+sample_submission = ROOT_DIR + "\\data\\sample_submission.csv"
+
 csv_processor = CSV_Processor()
 
 Xtrain, ytrain = csv_processor.process_csv(all_X_train_files, all_Y_train_files)
-Xval, yval = csv_processor.process_csv(all_X_val_files, all_Y_val_files)
-
-# print(Xtrain)
-# print(ytrain)
-# print(Xval)
-# print(yval)
+Xtest = csv_processor.process_test_csv(all_X_test_files)
 
 hidden_layer_sizes = [76]
-bestError = 1000.0
-bestLayerSize = 0
-# for i in range(100):
-model = NeuralNet([76])
+model = NeuralNet(hidden_layer_sizes)
 t = time.time()
 model.fit(Xtrain, ytrain)
 print("Fitting took %d seconds" % (time.time()-t))
 
 # Compute test error
-yhat = model.predict(Xval)
-testError = np.mean(yhat != yval)
-diff = np.mean(np.abs(yhat - yval))
-print(diff)
-# print(i)
-print("Test error = ", testError)
-# if (diff < bestError):
-#     bestError = diff
-#     bestLayerSize = i
+yhat = model.predict(Xtest)
+retcsv = yhat.flatten()
+retcsv2 = pd.DataFrame(retcsv, columns=["location"])
 
-print(bestError)
-print(bestLayerSize)
+# np.savetxt("y_actual.csv", yhat, delimiter=", ")
+# np.savetxt("y_expected.csv", yval, delimiter=", ")
+
+retcsv2.to_csv("y_pred.csv", index=False)
+
+# retcsv2 = pd.read_csv(ROOT_DIR + "\\y_pred.csv")
+
+df = csv_processor.process_output_csv(sample_submission)
+df.drop(df.columns[1], axis=1, inplace=True)
+df2 = df.join(retcsv2)
+df2.to_csv('y_output.csv', index=False)

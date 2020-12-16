@@ -7,7 +7,38 @@ import glob
 import re
 from neural_net import NeuralNet
 
+
 class CSV_Processor():
+
+    def process_output_csv(self, path):
+        df = pd.read_csv(path, index_col=None, header=0)
+        return df
+
+    def process_test_csv(self, path):
+        all_X_files = os.listdir(path)
+        all_X_files.sort(key=lambda f: int(re.sub('\D', '', f)))
+        # print(all_X_files)
+
+        main_X_file = []
+        for file in all_X_files:
+            df = pd.read_csv(path + file, index_col=None, header=0)
+            # print(file)
+            for col in df.columns:
+                if 'time' in col or 'id' in col or 'type' in col:
+                    df.drop(col, axis=1, inplace=True)
+
+                if 'role' in col:
+                    # convert 'role' values to integers
+                    for idx in range(11):
+                        if df.loc[idx, col] == 'agent':
+                            df.loc[idx, col] = 1
+                        else:
+                            df.loc[idx, col] = 0
+            array = df.to_numpy(dtype='float64')
+            flattened_array = array.flatten()
+            main_X_file.append(flattened_array)
+        main_X_array = np.array(main_X_file, dtype='float64')
+        return main_X_array
 
     def process_csv(self, Xpath, yPath):
         # pre-processing X train data
@@ -36,6 +67,10 @@ class CSV_Processor():
             flattened_array = array.flatten()
             main_X_file.append(flattened_array)
 
+        # convert main_X_file to np.array
+
+        # print(main_X_array)
+
         # pre-processing Y train data
         all_y_files = os.listdir(yPath)
         all_y_files.sort(key=lambda f: int(re.sub('\D', '', f)))
@@ -57,8 +92,11 @@ class CSV_Processor():
                 continue
             main_y_file.append(flattened_array)
 
+
         # convert main_files to np.array
         main_X_array = np.array(main_X_file, dtype='float64')
         main_y_array = np.array(main_y_file, dtype='float64')
+        # print(main_y_array)
+
 
         return main_X_array, main_y_array

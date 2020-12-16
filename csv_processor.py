@@ -6,9 +6,23 @@ import os
 import glob
 import re
 from neural_net import NeuralNet
+from sklearn import metrics
 
+
+ROOT_DIR = os.path.abspath(os.curdir)
+sample_submission = ROOT_DIR + "\\data\\sample_submission.csv"
 
 class CSV_Processor():
+
+    def to_kaggle_csv(self, y):
+        retcsv = y.flatten()
+        retcsv2 = pd.DataFrame(retcsv, columns=["location"])
+        retcsv2.to_csv("y_pred.csv", index=False)
+
+        df = self.process_output_csv(sample_submission)
+        df.drop(df.columns[1], axis=1, inplace=True)
+        df2 = df.join(retcsv2)
+        df2.to_csv('y_output.csv', index=False)
 
     def process_output_csv(self, path):
         df = pd.read_csv(path, index_col=None, header=0)
@@ -24,7 +38,7 @@ class CSV_Processor():
             df = pd.read_csv(path + file, index_col=None, header=0)
             # print(file)
             for col in df.columns:
-                if 'time' in col or 'id' in col or 'type' in col:
+                if 'time' in col or 'id' in col:
                     df.drop(col, axis=1, inplace=True)
 
                 if 'role' in col:
@@ -100,3 +114,30 @@ class CSV_Processor():
 
 
         return main_X_array, main_y_array
+
+    def find_rmse(self, y_pred_csv, y_test_csv):
+        y_pred = []
+        y_test = []
+
+        for row in y_pred_csv:
+            # if column number is even this is a x
+            for i in range(len(row) - 1):
+                if i % 2 == 0:
+                    point = [row[i], row[i + 1]]
+                    y_pred.append(point)
+        y_pred = np.array(y_pred)
+
+        for row in y_test_csv:
+            # if column number is even this is a x
+            for i in range(len(row) - 1):
+                if i % 2 == 0:
+                    point = [row[i], row[i + 1]]
+                    y_test.append(point)
+        y_test = np.array(y_test)
+
+        # print(y_test)
+        mean = metrics.mean_squared_error(y_test, y_pred)
+        # print(mean)
+        rmse = np.sqrt(mean / 600)
+        # print(rmse)
+        return rmse

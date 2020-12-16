@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pylab as plt
 import time
 import os
-import glob
 from neural_net import NeuralNet
 from csv_processor import CSV_Processor
 
@@ -20,16 +18,18 @@ all_X_train_files = ROOT_DIR + "\\data\\train\\X\\"
 all_Y_train_files = ROOT_DIR + "\\data\\train\\y\\"
 all_X_val_files = ROOT_DIR + "\\data\\val\\X\\"
 all_Y_val_files = ROOT_DIR + "\\data\\val\\y\\"
-
 all_X_test_files = ROOT_DIR + "\\data\\test\\X\\"
-
 sample_submission = ROOT_DIR + "\\data\\sample_submission.csv"
 
 csv_processor = CSV_Processor()
 
 Xtrain, ytrain = csv_processor.process_csv(all_X_train_files, all_Y_train_files)
+# Xval, yval = csv_processor.process_csv(all_X_val_files, all_Y_val_files)
 Xtest = csv_processor.process_test_csv(all_X_test_files)
 
+best_rmse = 1000
+best_index = 0
+# for i in range(100):`
 hidden_layer_sizes = [76]
 model = NeuralNet(hidden_layer_sizes)
 t = time.time()
@@ -38,17 +38,18 @@ print("Fitting took %d seconds" % (time.time()-t))
 
 # Compute test error
 yhat = model.predict(Xtest)
-retcsv = yhat.flatten()
-retcsv2 = pd.DataFrame(retcsv, columns=["location"])
 
-# np.savetxt("y_actual.csv", yhat, delimiter=", ")
-# np.savetxt("y_expected.csv", yval, delimiter=", ")
+# rmse = csv_processor.find_rmse(yhat, yval)
+# print(rmse, i)
+# if rmse < best_rmse:
+#     best_rmse = rmse
+#     best_index = i
+#
+# print(best_rmse)
+# print(best_index)
 
-retcsv2.to_csv("y_pred.csv", index=False)
+# export as csv
+csv_processor.to_kaggle_csv(yhat)
 
-# retcsv2 = pd.read_csv(ROOT_DIR + "\\y_pred.csv")
 
-df = csv_processor.process_output_csv(sample_submission)
-df.drop(df.columns[1], axis=1, inplace=True)
-df2 = df.join(retcsv2)
-df2.to_csv('y_output.csv', index=False)
+

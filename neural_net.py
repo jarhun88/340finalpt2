@@ -88,33 +88,6 @@ class NeuralNet():
 
         self.weights = unflatten_weights(weights_flat_new, self.layer_sizes)
 
-    def fit_SGD(self, X, y):
-        self.layer_sizes = [X.shape[1]] + self.hidden_layer_sizes + [y.shape[1]]
-        # random init
-        scale = 0.01
-        weights = list()
-        for i in range(len(self.layer_sizes)-1):
-            W = scale * np.random.randn(self.layer_sizes[i+1], self.layer_sizes[i])
-            b = scale * np.random.randn(1,self.layer_sizes[i+1])
-            weights.append((W,b))
-        weights_flat = flatten_weights(weights)
-
-        ## START SGD
-        n = X.shape[0]
-        alpha = 1e-3
-        batch_size = 500
-        for t in range(self.max_iter*n//batch_size): # max_iter is epochs here
-            if t*batch_size % n == 0:
-                f, g = self.funObj(weights_flat, X, y)
-                # print("Epoch %d, Loss = %f" % ((t*batch_size)//n+1, f))
-            
-            batch = np.random.choice(n,size=batch_size,replace=False)
-
-            f, g = self.funObj(weights_flat, X[batch], y[batch])
-            weights_flat = weights_flat - alpha * g
-        
-        self.weights = unflatten_weights(weights_flat, self.layer_sizes)
-
     def predict(self, X):
         for W, b in self.weights:
             Z = X @ W.T + b

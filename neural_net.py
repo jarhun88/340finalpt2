@@ -29,7 +29,7 @@ def log_sum_exp(Z):
 
 class NeuralNet():
     # uses sigmoid nonlinearity
-    def __init__(self, hidden_layer_sizes, lammy=1, max_iter=100):
+    def __init__(self, hidden_layer_sizes, lammy=1, max_iter=1000):
         self.hidden_layer_sizes = hidden_layer_sizes
         self.lammy = lammy
         self.max_iter = max_iter

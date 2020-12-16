@@ -38,7 +38,7 @@ class CSV_Processor():
             df = pd.read_csv(path + file, index_col=None, header=0)
             # print(file)
             for col in df.columns:
-                if 'time' in col or 'id' in col:
+                if 'time' in col or 'id' in col or 'type' in col:
                     df.drop(col, axis=1, inplace=True)
 
                 if 'role' in col:

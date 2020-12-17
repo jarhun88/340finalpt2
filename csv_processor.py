@@ -14,6 +14,7 @@ sample_submission = ROOT_DIR + "\\data\\sample_submission.csv"
 # csv processor for MLP model
 class CSV_Processor():
 
+    # converts numpy ndarray to csv file for submission
     def to_kaggle_csv(self, y):
         retcsv = y.flatten()
         retcsv2 = pd.DataFrame(retcsv, columns=["location"])
@@ -24,10 +25,12 @@ class CSV_Processor():
         df2 = df.join(retcsv2)
         df2.to_csv('y_output.csv', index=False)
 
+    # read file path into pd dataframe object
     def process_output_csv(self, path):
         df = pd.read_csv(path, index_col=None, header=0)
         return df
 
+    # convert path into nd array with specific features removed
     def process_test_csv(self, path):
         all_X_files = os.listdir(path)
         all_X_files.sort(key=lambda f: int(re.sub('\D', '', f)))
@@ -36,11 +39,11 @@ class CSV_Processor():
         for file in all_X_files:
             df = pd.read_csv(path + file, index_col=None, header=0)
             for col in df.columns:
+                # removing time, id and type feature columns from csv file
                 if 'time' in col or 'id' in col or 'type' in col:
                     df.drop(col, axis=1, inplace=True)
-
+                # convert 'role' values to integers
                 if 'role' in col:
-                    # convert 'role' values to integers
                     for idx in range(11):
                         if df.loc[idx, col] == 'agent':
                             df.loc[idx, col] = 1
@@ -52,6 +55,7 @@ class CSV_Processor():
         main_X_array = np.array(main_X_file, dtype='float64')
         return main_X_array
 
+    # convert Xpath and ypath into ndarray with specific features removed
     def process_csv(self, Xpath, yPath):
         # pre-processing X train data
         all_X_files = os.listdir(Xpath)
@@ -94,13 +98,13 @@ class CSV_Processor():
                 continue
             main_y_file.append(flattened_array)
 
-
         # convert main_files to np.array
         main_X_array = np.array(main_X_file, dtype='float64')
         main_y_array = np.array(main_y_file, dtype='float64')
 
         return main_X_array, main_y_array
 
+    # rmse function for calculating kaggle score
     def find_rmse(self, y_pred_csv, y_test_csv):
         y_pred = []
         y_test = []

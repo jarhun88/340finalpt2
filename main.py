@@ -22,6 +22,7 @@ sample_submission = ROOT_DIR + "\\data\\sample_submission.csv"
 
 csv_processor = CSV_Processor()
 
+# convert csv file to single dataset for X and y
 Xtrain, ytrain = csv_processor.process_csv(all_X_train_files, all_Y_train_files)
 # Xval, yval = csv_processor.process_csv(all_X_val_files, all_Y_val_files)
 Xtest = csv_processor.process_test_csv(all_X_test_files)

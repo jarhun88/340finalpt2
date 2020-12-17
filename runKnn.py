@@ -11,20 +11,18 @@ from neural_net import NeuralNet
 from csv_processor2 import CSV_Processor
 from knn import KNN
 
-print('hi')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-q', '--question', required=True)
 
 io_args = parser.parse_args()
 question = io_args.question
-print('hi')
 
 csv_processor = CSV_Processor(knnMode=True)
 
-# for converting all X and y csv data into a single csv file 
+# for converting all X and y csv data into a single csv file, for knn we only keep the agent x and y columns
 if question == "csv":
-    print('hi')
+    
 
     ROOT_DIR = os.path.abspath(os.curdir)
     all_X_train_files = ROOT_DIR + "/data/train/X/*.csv"
@@ -54,7 +52,7 @@ if question == 'knn':
     dfxtest = pd.read_csv('Xtestprocessed.csv', sep=',', header=0, index_col=0)
     dfyval = pd.read_csv('yvalprocessed.csv', sep=',', header=0, index_col=0)
 
-    # yval cleaning:
+    
     yval = dfyval.to_numpy()
     Xtest = dfxtest.to_numpy()
 
@@ -70,10 +68,15 @@ if question == 'knn':
 
         model = KNN(k=n)
         model.fit(X, y)
+
+        # more cleaning of x data happens within the predict function (string representation of an array into ndarray)
         y_pred = model.predict(Xtest)
 
         test_error_abs = 0
         test_error_mse = 0
+
+        # y training data extracted from csv is actually a string representation of an array
+        # the following for loop changes each y[i] into a proper array for result comparison
         for i in range(len(y_pred)):
             label = y[i]
             label = label[0]

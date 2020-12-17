@@ -40,7 +40,6 @@ class NeuralNet():
         activations = [X]
         for W, b in weights:
             Z = X @ W.T + b
-            # Z_max = np.max(Z, axis=1)
             X = 1/(1+np.exp(-Z))
             activations.append(X)
 

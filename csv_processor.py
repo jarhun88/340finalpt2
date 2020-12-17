@@ -8,10 +8,10 @@ import re
 from neural_net import NeuralNet
 from sklearn import metrics
 
-
 ROOT_DIR = os.path.abspath(os.curdir)
 sample_submission = ROOT_DIR + "\\data\\sample_submission.csv"
 
+# csv processor for MLP model
 class CSV_Processor():
 
     def to_kaggle_csv(self, y):
@@ -31,12 +31,10 @@ class CSV_Processor():
     def process_test_csv(self, path):
         all_X_files = os.listdir(path)
         all_X_files.sort(key=lambda f: int(re.sub('\D', '', f)))
-        # print(all_X_files)
 
         main_X_file = []
         for file in all_X_files:
             df = pd.read_csv(path + file, index_col=None, header=0)
-            # print(file)
             for col in df.columns:
                 if 'time' in col or 'id' in col or 'type' in col:
                     df.drop(col, axis=1, inplace=True)
@@ -56,16 +54,12 @@ class CSV_Processor():
 
     def process_csv(self, Xpath, yPath):
         # pre-processing X train data
-        # ROOT_DIR = os.path.abspath(os.curdir)
-        # csvtrainingDir = ROOT_DIR
         all_X_files = os.listdir(Xpath)
         all_X_files.sort(key=lambda f: int(re.sub('\D', '', f)))
-        # print(all_X_files)
 
         main_X_file = []
         for file in all_X_files:
             df = pd.read_csv(Xpath + file, index_col=None, header=0)
-            # print(file)
             for col in df.columns:
                 if 'time' in col or 'id' in col or 'type' in col:
                     df.drop(col, axis=1, inplace=True)
@@ -81,19 +75,13 @@ class CSV_Processor():
             flattened_array = array.flatten()
             main_X_file.append(flattened_array)
 
-        # convert main_X_file to np.array
-
-        # print(main_X_array)
-
         # pre-processing Y train data
         all_y_files = os.listdir(yPath)
         all_y_files.sort(key=lambda f: int(re.sub('\D', '', f)))
-        # print(all_y_files)
 
         main_y_file = []
         for i in range(len(all_y_files)):
             df = pd.read_csv(yPath + all_y_files[i], index_col=None, header=0)
-            # print(file)
             for col in df.columns:
                 if 'time' in col:
                     df.drop(col, axis=1, inplace=True)
@@ -110,8 +98,6 @@ class CSV_Processor():
         # convert main_files to np.array
         main_X_array = np.array(main_X_file, dtype='float64')
         main_y_array = np.array(main_y_file, dtype='float64')
-        # print(main_y_array)
-
 
         return main_X_array, main_y_array
 
@@ -135,9 +121,6 @@ class CSV_Processor():
                     y_test.append(point)
         y_test = np.array(y_test)
 
-        # print(y_test)
         mean = metrics.mean_squared_error(y_test, y_pred)
-        # print(mean)
         rmse = np.sqrt(mean / 600)
-        # print(rmse)
         return rmse

@@ -5,7 +5,6 @@ import os
 from neural_net import NeuralNet
 from csv_processor import CSV_Processor
 
-# pre-processing X train data
 ROOT_DIR = os.path.abspath(os.curdir)
 #for mac
 # all_X_train_files = ROOT_DIR + "data/train/X/*.csv"
@@ -50,6 +49,3 @@ yhat = model.predict(Xtest)
 
 # export as csv
 csv_processor.to_kaggle_csv(yhat)
-
-
-

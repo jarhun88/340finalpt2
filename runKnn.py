@@ -62,7 +62,7 @@ if question == 'knn':
     print(y.shape)
 
 
-    for n in range(5):
+    for n in range(1, 250, 2):
         bestErr = 100000
         bestn = 0
 

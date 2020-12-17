@@ -26,6 +26,7 @@ class KNN:
                 label = self.y[j]
                 label = label[0]
 
+                # y labels needed to be changed from string to actual array.
                 if label[1] == ' ':
                     label = label.replace(' ', '', 1) 
                 label = label.replace('    ', ' ').replace('   ', ' ').replace('  ', ' ').replace(' ', ', ')
